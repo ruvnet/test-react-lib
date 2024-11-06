@@ -7,7 +7,7 @@ import './App.css'
 import { BrowserRouter as Router, Routes, Route, Link, useParams } from "react-router-dom";
 
 const config = {
-  format: "auto_mode",
+  format: "custom",
   cot: false,
   audience: "General",
   responseLength: "3 pages",
@@ -34,7 +34,7 @@ const config = {
   imageHeight: 768,
   imageWidth: 1344,
   responseModel: 'claude-3-5-sonnet-20240620',
-  userUrls: [],
+  userUrls: ['https://gist.github.com/zstone-cai/323e78d0b0e0f9f312105d2c1595bcbd'],
   userPdfDocuments: [
     {
       downloadUrl: "https://capitol-ai-text-extraction-data.s3.amazonaws.com/239c6fa5-81de-4842-b955-e29c45d157f6/ai-grants-PKG00282649-instructions-result.json",
