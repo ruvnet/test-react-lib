@@ -35,7 +35,12 @@ const config = {
   imageWidth: 1344,
   responseModel: 'claude-3-5-sonnet-20240620',
   userUrls: [],
-  userPdfDocuments: [],
+  userPdfDocuments: [
+    {
+      downloadUrl: "https://capitol-ai-text-extraction-data.s3.amazonaws.com/239c6fa5-81de-4842-b955-e29c45d157f6/ai-grants-PKG00282649-instructions-result.json",
+      filename: "ai-grants-PKG00282649-instructions-result.pdf"
+    }
+  ],
   userPdfUrls: [],
   userImages: [],
 };
