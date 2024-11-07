@@ -196,6 +196,10 @@ def test_generate_story_failure(mock_post):
 @pytest.mark.integration
 def test_generate_story_integration():
     """Integration test using real API endpoints"""
+    config = get_env_config()
+    if not all([config['api_url'], config['capitol_api_key'], config['capitol_api_url']]):
+        pytest.skip("Required environment variables not set")
+        
     # Test with abstract report config
     result1 = generate_story(abstract_report_config)
     assert result1 is not None, "API response should not be None"
