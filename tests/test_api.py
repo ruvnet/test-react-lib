@@ -136,8 +136,8 @@ def generate_story(story_config):
     # Validate API key format
     if len(api_key) < 32:  # Typical minimum length for API keys
         raise ValueError(f"API key seems too short: {len(api_key)} chars")
-    # Allow common API key special characters
-    valid_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._')
+    # Allow common API key special characters including Base64 chars
+    valid_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._/+=')
     if not all(c in valid_chars for c in api_key):
         invalid_chars = [c for c in api_key if c not in valid_chars]
         raise ValueError(f"API key contains invalid characters: {invalid_chars}")
