@@ -116,9 +116,16 @@ def generate_story(story_config):
     story_id = str(uuid.uuid4())
     current_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     
-    api_key = config["capitol_api_key"].strip()
-    if not api_key.startswith('Bearer '):
-        api_key = f'Bearer {api_key}'
+    # Get and validate API key
+    api_key = config["capitol_api_key"]
+    if not api_key:
+        raise ValueError("Capitol API key is missing")
+    
+    # Clean and format API key
+    api_key = api_key.strip()
+    if api_key.startswith('Bearer '):
+        api_key = api_key[7:].strip()  # Remove existing Bearer prefix
+    api_key = f'Bearer {api_key}'
     
     headers = {
         'Authorization': api_key,
@@ -126,15 +133,22 @@ def generate_story(story_config):
         'Content-Type': 'application/json'
     }
     
-    # Debug headers (remove in production)
-    print(f"Request headers: {json.dumps({k: v if k != 'Authorization' else f'[REDACTED: {v[:10]}...]' for k, v in headers.items()}, indent=2)}")
+    # Enhanced debug logging
+    print("\nAPI Request Details:")
+    print(f"- API URL: {config['api_url']}")
+    print(f"- API Key Format:")
+    print(f"  - Total length: {len(api_key)} chars")
+    print(f"  - Prefix: '{api_key[:10]}...'")
+    print(f"  - Contains whitespace: {any(c.isspace() for c in api_key)}")
+    print(f"  - Contains non-ASCII: {any(ord(c) >= 128 for c in api_key)}")
     
-    # Print first/last few chars of auth header for debugging
-    auth_header = headers['Authorization']
-    print(f"Auth header format check:")
-    print(f"- Starts with: '{auth_header[:10]}...'")
-    print(f"- Length: {len(auth_header)} characters")
-    print(f"- Contains 'Bearer': {'Bearer' in auth_header}")
+    # Log full headers except sensitive data
+    print("\nRequest Headers:")
+    for key, value in headers.items():
+        if key.lower() == 'authorization':
+            print(f"  {key}: Bearer [REDACTED]")
+        else:
+            print(f"  {key}: {value}")
     
     url = f"{config['api_url']}/api/latest/stories/story"
     
@@ -161,17 +175,36 @@ def generate_story(story_config):
     }
     
     try:
+        # Make request with detailed error handling
         response = requests.post(url, headers=headers, json=story_data)
-        print(f"Response status: {response.status_code}")
-        print(f"Response body: {response.text}")
-        if response.headers.get('content-type', '').startswith('application/json'):
-            return response.json()
+        
+        print("\nAPI Response Details:")
+        print(f"- Status Code: {response.status_code}")
+        print(f"- Response Headers:")
+        for key, value in response.headers.items():
+            print(f"  {key}: {value}")
+        
+        # Check for specific error conditions
+        if response.status_code == 401:
+            print("\nAuthentication Error Details:")
+            print("- Please verify:")
+            print("  1. API key is valid and not expired")
+            print("  2. API key has correct permissions")
+            print("  3. API key is for the correct environment")
+            
+        # Try to parse response body
+        try:
+            response_data = response.json()
+            print(f"\nResponse Body: {json.dumps(response_data, indent=2)}")
+            return response_data
+        except json.JSONDecodeError as e:
+            print(f"\nInvalid JSON Response: {response.text}")
+            return None
+            
     except requests.exceptions.RequestException as e:
-        print(f"Request error: {e}")
+        print(f"\nRequest Failed: {str(e)}")
         return None
-    except json.JSONDecodeError as e:
-        print(f"JSON decode error: {e}")
-        return None
+    
     return None
 
 def main():
