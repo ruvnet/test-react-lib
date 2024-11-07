@@ -121,16 +121,31 @@ def generate_story(story_config):
     if not api_key:
         raise ValueError("Capitol API key is missing")
     
-    # Clean and format API key
+    # Validate API URL
+    api_url = config["api_url"]
+    if not api_url:
+        raise ValueError("API URL is missing")
+    if not api_url.startswith(('http://', 'https://')):
+        raise ValueError(f"Invalid API URL format: {api_url}")
+    
+    # Clean and validate API key format
     api_key = api_key.strip()
     if api_key.startswith('Bearer '):
         api_key = api_key[7:].strip()  # Remove existing Bearer prefix
+    
+    # Validate API key format
+    if len(api_key) < 32:  # Typical minimum length for API keys
+        raise ValueError(f"API key seems too short: {len(api_key)} chars")
+    if not api_key.replace('-', '').isalnum():  # Allow hyphens but otherwise should be alphanumeric
+        raise ValueError("API key contains invalid characters")
+        
     api_key = f'Bearer {api_key}'
     
     headers = {
         'Authorization': api_key,
         'accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'User-Agent': 'Capitol-AI-Test/1.0'  # Add User-Agent header
     }
     
     # Enhanced debug logging
@@ -191,6 +206,17 @@ def generate_story(story_config):
             print("  1. API key is valid and not expired")
             print("  2. API key has correct permissions")
             print("  3. API key is for the correct environment")
+            print("\nTroubleshooting steps:")
+            print("  1. Check if API key is from the correct Capitol AI environment")
+            print("  2. Verify API key has not been revoked")
+            print("  3. Ensure API URL matches the key's environment")
+            print("  4. Try generating a new API key")
+            print(f"\nEndpoint being accessed: {url}")
+            try:
+                error_details = response.json()
+                print(f"Error response: {json.dumps(error_details, indent=2)}")
+            except:
+                print(f"Raw error response: {response.text}")
             
         # Try to parse response body
         try:
