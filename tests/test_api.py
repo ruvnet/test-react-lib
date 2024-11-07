@@ -1,6 +1,29 @@
 import os
 from dotenv import load_dotenv
 import json
+
+# Test Configuration Options
+# Uncomment and modify these values to customize test behavior
+"""
+--test-options--
+# Skip integration tests
+pytest.mark.skip_integration = True
+
+# Mock API responses
+mock_api_responses = True 
+
+# Test timeouts
+test_timeout = 30  # seconds
+
+# Verbose output
+debug_output = True
+
+# API retry attempts
+max_retries = 3
+
+# Test data paths
+test_data_dir = "tests/data"
+"""
 import requests
 import uuid
 from datetime import datetime, UTC
