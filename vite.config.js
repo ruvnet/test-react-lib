@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/proxy/api/capitolai': {
-        target: 'http://localhost:8000/api/v1',
+        target: 'https://animated-train-pg65x7gxvwf6r5j-5173.app.github.dev/api/v1',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/proxy\/api\/capitolai/, ''),
     },
