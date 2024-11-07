@@ -336,11 +336,26 @@ def test_generate_story_integration():
     if result1 is None:
         pytest.skip("API returned None response - check previous error logs")
     
+    print("\nFull API Response:")
+    print(json.dumps(result1, indent=2))
+    
     if 'error' in result1:
         error_msg = result1.get('error', {})
         if isinstance(error_msg, dict):
             error_msg = json.dumps(error_msg, indent=2)
-        pytest.skip(f"API returned error:\n{error_msg}\n\nCheck API key permissions and configuration")
+        else:
+            error_msg = str(error_msg)
+        
+        full_error = (
+            "\nAPI Error Details:"
+            f"\n{error_msg}"
+            "\n\nTroubleshooting Steps:"
+            "\n1. Verify API key is valid"
+            "\n2. Check API key permissions"
+            "\n3. Ensure API URL is correct"
+            "\n4. Confirm API service is available"
+        )
+        pytest.skip(full_error)
     
     assert 'created' in result1, f"Expected 'created' in response, got: {result1}"
     assert 'id' in result1['created']
