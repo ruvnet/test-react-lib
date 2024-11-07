@@ -321,14 +321,26 @@ def test_generate_story_integration():
             missing_vars.append(var)
     
     if missing_vars:
-        pytest.skip(f"Missing required environment variables: {', '.join(missing_vars)}")
+        skip_reason = f"Missing required environment variables: {', '.join(missing_vars)}"
+        print(f"\nSkipping test: {skip_reason}")
+        pytest.skip(skip_reason)
     
     # Print debug info
     print("\nEnvironment Configuration:")
     print(f"API URL: {config['api_url']}")
     print(f"Capitol API URL: {config['capitol_api_url']}")
-    print(f"API Key Format: {config['capitol_api_key'][:6]}...{config['capitol_api_key'][-4:] if config['capitol_api_key'] else 'None'}")
-    print(f"API Key Length: {len(config['capitol_api_key']) if config['capitol_api_key'] else 0} characters")
+    
+    # Detailed API key validation
+    api_key = config['capitol_api_key']
+    if api_key:
+        print(f"API Key Format: {api_key[:6]}...{api_key[-4:] if len(api_key) > 10 else 'TOO_SHORT'}")
+        print(f"API Key Length: {len(api_key)} characters")
+        print(f"API Key starts with 'Bearer': {'Bearer' in api_key}")
+        print(f"API Key contains spaces: {' ' in api_key}")
+        print(f"API Key contains newlines: {'\\n' in api_key}")
+        print(f"API Key contains tabs: {'\\t' in api_key}")
+    else:
+        print("API Key: Not present")
         
     print("\nAttempting to generate abstract report...")
     result1 = generate_story(abstract_report_config)
