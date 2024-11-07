@@ -93,7 +93,7 @@ def generate_story(story_config):
     story_id = str(uuid.uuid4())
     current_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     
-    api_key = config["capitol_api_key"]
+    api_key = config["capitol_api_key"].strip()
     if not api_key.startswith('Bearer '):
         api_key = f'Bearer {api_key}'
     
@@ -104,7 +104,14 @@ def generate_story(story_config):
     }
     
     # Debug headers (remove in production)
-    print(f"Request headers: {json.dumps({k: v if k != 'Authorization' else '[REDACTED]' for k, v in headers.items()}, indent=2)}")
+    print(f"Request headers: {json.dumps({k: v if k != 'Authorization' else f'[REDACTED: {v[:10]}...]' for k, v in headers.items()}, indent=2)}")
+    
+    # Print first/last few chars of auth header for debugging
+    auth_header = headers['Authorization']
+    print(f"Auth header format check:")
+    print(f"- Starts with: '{auth_header[:10]}...'")
+    print(f"- Length: {len(auth_header)} characters")
+    print(f"- Contains 'Bearer': {'Bearer' in auth_header}")
     
     url = f"{config['api_url']}/api/latest/stories/story"
     
