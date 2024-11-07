@@ -93,11 +93,18 @@ def generate_story(story_config):
     story_id = str(uuid.uuid4())
     current_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     
+    api_key = config["capitol_api_key"]
+    if not api_key.startswith('Bearer '):
+        api_key = f'Bearer {api_key}'
+    
     headers = {
-        'Authorization': f'Bearer {config["capitol_api_key"]}',
+        'Authorization': api_key,
         'accept': 'application/json',
         'Content-Type': 'application/json'
     }
+    
+    # Debug headers (remove in production)
+    print(f"Request headers: {json.dumps({k: v if k != 'Authorization' else '[REDACTED]' for k, v in headers.items()}, indent=2)}")
     
     url = f"{config['api_url']}/api/latest/stories/story"
     
