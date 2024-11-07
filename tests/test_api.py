@@ -333,8 +333,14 @@ def test_generate_story_integration():
     assert result1 is not None, "API response should not be None"
     print(f"API Response for abstract report: {json.dumps(result1, indent=2)}")
     
+    if result1 is None:
+        pytest.skip("API returned None response - check previous error logs")
+    
     if 'error' in result1:
-        pytest.skip(f"API returned error: {result1['error']}")
+        error_msg = result1.get('error', {})
+        if isinstance(error_msg, dict):
+            error_msg = json.dumps(error_msg, indent=2)
+        pytest.skip(f"API returned error:\n{error_msg}\n\nCheck API key permissions and configuration")
     
     assert 'created' in result1, f"Expected 'created' in response, got: {result1}"
     assert 'id' in result1['created']
