@@ -197,8 +197,20 @@ def test_generate_story_failure(mock_post):
 def test_generate_story_integration():
     """Integration test using real API endpoints"""
     config = get_env_config()
-    if not all([config['api_url'], config['capitol_api_key'], config['capitol_api_url']]):
-        pytest.skip("Required environment variables not set")
+    
+    # More detailed environment variable checking
+    missing_vars = []
+    for var in ['api_url', 'capitol_api_key', 'capitol_api_url']:
+        if not config[var]:
+            missing_vars.append(var)
+    
+    if missing_vars:
+        pytest.skip(f"Missing required environment variables: {', '.join(missing_vars)}")
+    
+    # Print debug info (remove in production)
+    print(f"Using API URL: {config['api_url']}")
+    print(f"Capitol API URL: {config['capitol_api_url']}")
+    print(f"API Key present: {'Yes' if config['capitol_api_key'] else 'No'}")
         
     # Test with abstract report config
     result1 = generate_story(abstract_report_config)
